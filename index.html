@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision X-Ray & Word Mission</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+
+        #game-view {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: #222;
+            border: 4px solid #3498db;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        /* Screen Shake Animation */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-2px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        .shake {
+            animation: shake 0.4s;
+            border-color: #e74c3c !important; /* Flash red border on error */
+        }
+
+        .layer-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #skin-layer {
+            z-index: 1;
+            background-color: #2c3e50;
+            pointer-events: none;
+        }
+
+        #bone-layer {
+            z-index: 2;
+            background-color: #000;
+            clip-path: inset(0 0 100% 100%);
+            pointer-events: all; /* Catch background clicks for "wrong" answers */
+        }
+
+        .body-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .target-x {
+            fill: #ff4757;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: all;
+            user-select: none;
+        }
+
+        .target-x.found { fill: #2ecc71; }
+
+        .word-target {
+            position: absolute;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ecf0f1;
+            cursor: pointer;
+            z-index: 5;
+            user-select: none;
+            transition: color 0.3s, transform 0.2s;
+            pointer-events: all;
+        }
+
+        .word-target:hover {
+            transform: scale(1.1);
+            color: #f1c40f;
+        }
+
+        .word-target.found {
+            color: #2ecc71;
+            text-decoration: line-through;
+            pointer-events: none;
+        }
+
+        #xray-frame {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+            pointer-events: none;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        #ui { margin-bottom: 15px; text-align: center; width: 400px; }
+        #mission-text { font-size: 18px; color: #ff4757; font-weight: bold; margin: 10px 0; min-height: 20px; }
+        .counter { font-size: 22px; color: #00d2ff; }
+        
+        button {
+            margin-top: 10px; padding: 10px 20px; font-size: 16px; font-weight: bold;
+            color: white; background-color: #3498db; border: none; border-radius: 5px;
+            cursor: pointer; font-family: inherit; transition: 0.2s;
+        }
+        button:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
+        <div id="mission-text">MISSION: Find 5 hidden fractures (X)</div>
+        <button id="reset-btn" onclick="resetGame()">Start Again</button>
+    </div>
+
+    <div id="game-view">
+        <div id="xray-frame"></div>
+
+        <div id="skin-layer" class="layer-wrapper">
+            <svg class="body-svg" viewBox="0 0 100 200">
+                <g fill="#e0ac69">
+                    <circle cx="50" cy="25" r="14" />
+                    <rect x="34" y="42" width="32" height="70" rx="4" />
+                    <rect x="22" y="44" width="10" height="60" rx="4" />
+                    <rect x="68" y="44" width="10" height="60" rx="4" />
+                    <rect x="36" y="115" width="12" height="75" rx="4" />
+                    <rect x="52" y="115" width="12" height="75" rx="4" />
+                </g>
+            </svg>
+        </div>
+
+        <div id="bone-layer" class="layer-wrapper">
+            <div class="word-target word-box" style="top: 50px; left: 30px;">box</div>
+            <div class="word-target word-box" style="top: 250px; left: 330px;">box</div>
+            <div class="word-target word-box" style="top: 480px; left: 40px;">box</div>
+            
+            <div class="word-target word-fox" style="top: 80px; left: 330px;">fox</div>
+            <div class="word-target word-fox" style="top: 300px; left: 20px;">fox</div>
+            <div class="word-target word-fox" style="top: 520px; left: 330px;">fox</div>
+
+            <svg class="body-svg" viewBox="0 0 100 200">
+                <g fill="white" opacity="0.9">
+                    <path d="M42 25 A 8 8 0 1 1 58 25 A 8 8 0 1 1 42 25" fill="none" stroke="white" stroke-width="1.5"/>
+                    <rect x="48" y="40" width="4" height="75" rx="2"/>
+                    <path d="M36 55 H 64 M 36 65 H 64 M 36 75 H 64" stroke="white" stroke-width="1"/>
+                    <rect x="40" y="110" width="20" height="8" rx="2" fill="#888"/>
+                    <rect x="25" y="46" width="3" height="50" />
+                    <rect x="72" y="46" width="3" height="50" />
+                    <rect x="40" y="120" width="4" height="65" />
+                    <rect x="56" y="120" width="4" height="65" />
+                </g>
+
+                <text x="46" y="28" class="target-x" id="x1">X</text>
+                <text x="55" y="65" class="target-x" id="x2">X</text>
+                <text x="44" y="112" class="target-x" id="x3">X</text>
+                <text x="36" y="150" class="target-x" id="x4">X</text>
+                <text x="52" y="175" class="target-x" id="x5">X</text>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        const view = document.getElementById('game-view');
+        const boneLayer = document.getElementById('bone-layer');
+        const frame = document.getElementById('xray-frame');
+        const uiScore = document.getElementById('found-count');
+        const uiTotal = document.getElementById('total-count');
+        const uiMission = document.getElementById('mission-text');
+        
+        let phase = 'x'; 
+        let foundX = 0, foundBox = 0, foundFox = 0;
+
+        // --- AUDIO SYNTHESIS (No external files needed) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playCorrectChime() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch A5
+            osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playWrongBuzzer() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime); // Low rough pitch
+            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function triggerError() {
+            playWrongBuzzer();
+            view.classList.remove('shake');
+            void view.offsetWidth; // Force CSS reflow to restart animation
+            view.classList.add('shake');
+        }
+
+        function speak(text) {
+            window.speechSynthesis.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0; 
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // --- X-RAY TRACKING ---
+        view.addEventListener('mousemove', (e) => {
+            const rect = view.getBoundingClientRect();
+            const x = e.clientX - rect.left, y = e.clientY - rect.top;
+            frame.style.display = 'block';
+            frame.style.left = x + 'px'; frame.style.top = y + 'px';
+            const size = 60, t = y - size, l = x - size, b = y + size, r = x + size;
+            boneLayer.style.clipPath = `polygon(${l}px ${t}px, ${r}px ${t}px, ${r}px ${b}px, ${l}px ${b}px)`;
+        });
+
+        view.addEventListener('mouseleave', () => {
+            frame.style.display = 'none';
+            boneLayer.style.clipPath = `inset(0 0 100% 100%)`;
+        });
+
+        // --- CLICK LOGIC ---
+
+        // 1. Listen for background clicks (Wrong Answer)
+        boneLayer.addEventListener('mousedown', () => {
+            triggerError();
+        });
+
+        // 2. Click Logic for X's
+        document.querySelectorAll('.target-x').forEach(target => {
+            target.addEventListener('mousedown', (e) => {
+                if (phase !== 'x' || target.classList.contains('found')) return; // Ignore if wrong phase
+                
+                e.stopPropagation(); // Prevent background click (Error) from firing
+                playCorrectChime();
+                target.classList.add('found');
+                target.textContent = '✔';
+                foundX++;
+                uiScore.textContent = foundX;
+
+                if (foundX === 5) {
+                    phase = 'box';
+                    uiMission.textContent = "MISSION: Scan for the words 'box'";
+                    uiMission.style.color = "#f1c40f";
+                    uiScore.textContent = 0; uiTotal.textContent = 3;
+                    setTimeout(() => speak("Find all the box"), 500);
+                }
+            });
+        });
+
+        // 3. Click Logic for Words
+        document.querySelectorAll('.word-target').forEach(target => {
+            target.addEventListener('mousedown', (e) => {
+                const isBox = target.classList.contains('word-box');
+                const isFox = target.classList.contains('word-fox');
+
+                // Correct Box Found
+                if (phase === 'box' && isBox && !target.classList.contains('found')) {
+                    e.stopPropagation();
+                    playCorrectChime();
+                    target.classList.add('found');
+                    foundBox++;
+                    uiScore.textContent = foundBox;
+
+                    if (foundBox === 3) {
+                        phase = 'fox';
+                        uiMission.textContent = "MISSION: Scan for the words 'fox'";
+                        uiMission.style.color = "#e67e22";
+                        uiScore.textContent = 0; uiTotal.textContent = 3;
+                        setTimeout(() => speak("Find all the fox"), 500);
+                    }
+                }
+                // Correct Fox Found
+                else if (phase === 'fox' && isFox && !target.classList.contains('found')) {
+                    e.stopPropagation();
+                    playCorrectChime();
+                    target.classList.add('found');
+                    foundFox++;
+                    uiScore.textContent = foundFox;
+
+                    if (foundFox === 3) {
+                        phase = 'done';
+                        uiMission.textContent = "MISSION COMPLETE!";
+                        uiMission.style.color = "#2ecc71";
+                        setTimeout(() => speak("Good job"), 500);
+                    }
+                }
+                // If they click a word during the wrong phase, the event bubbles up to boneLayer and causes an error!
+            });
+        });
+
+        function resetGame() {
+            phase = 'x'; foundX = 0; foundBox = 0; foundFox = 0;
+            uiScore.textContent = 0; uiTotal.textContent = 5;
+            uiMission.textContent = "MISSION: Find 5 hidden fractures (X)";
+            uiMission.style.color = "#ff4757";
+
+            document.querySelectorAll('.target-x').forEach(t => { t.classList.remove('found'); t.textContent = 'X'; });
+            document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
+            view.classList.remove('shake');
+        }
+    </script>
+</body>
+</html>
