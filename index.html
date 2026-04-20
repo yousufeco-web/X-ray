@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision X-Ray & Word Mission</title>
+    <title>Precision X-Ray & Word Mission (Letter Y)</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,7 @@
             width: 400px;
             height: 600px;
             background: #222;
-            border: 4px solid #3498db;
+            border: 4px solid #9b59b6; /* Changed to purple for a fresh look */
             border-radius: 10px;
             overflow: hidden;
             cursor: crosshair;
@@ -67,7 +67,7 @@
             z-index: 2;
             background-color: #000;
             clip-path: inset(0 0 100% 100%);
-            pointer-events: all; /* Catch background clicks for "wrong" answers */
+            pointer-events: all; 
         }
 
         .body-svg {
@@ -79,7 +79,7 @@
             pointer-events: none;
         }
 
-        .target-x {
+        .target-y {
             fill: #ff4757;
             font-size: 18px;
             font-weight: bold;
@@ -88,7 +88,7 @@
             user-select: none;
         }
 
-        .target-x.found { fill: #2ecc71; }
+        .target-y.found { fill: #2ecc71; }
 
         .word-target {
             position: absolute;
@@ -117,8 +117,8 @@
             position: absolute;
             width: 120px;
             height: 120px;
-            border: 2px solid #00d2ff;
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+            border: 2px solid #9b59b6;
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
             pointer-events: none;
             z-index: 10;
             transform: translate(-50%, -50%);
@@ -127,21 +127,21 @@
 
         #ui { margin-bottom: 15px; text-align: center; width: 400px; }
         #mission-text { font-size: 18px; color: #ff4757; font-weight: bold; margin: 10px 0; min-height: 20px; }
-        .counter { font-size: 22px; color: #00d2ff; }
+        .counter { font-size: 22px; color: #9b59b6; font-weight: bold; }
         
         button {
             margin-top: 10px; padding: 10px 20px; font-size: 16px; font-weight: bold;
-            color: white; background-color: #3498db; border: none; border-radius: 5px;
+            color: white; background-color: #8e44ad; border: none; border-radius: 5px;
             cursor: pointer; font-family: inherit; transition: 0.2s;
         }
-        button:hover { background-color: #2980b9; }
+        button:hover { background-color: #732d91; }
     </style>
 </head>
 <body>
 
     <div id="ui">
         <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
-        <div id="mission-text">MISSION: Find 5 hidden fractures (X)</div>
+        <div id="mission-text">MISSION: Find 5 hidden anomalies (Y)</div>
         <button id="reset-btn" onclick="resetGame()">Start Again</button>
     </div>
 
@@ -162,13 +162,13 @@
         </div>
 
         <div id="bone-layer" class="layer-wrapper">
-            <div class="word-target word-box" style="top: 50px; left: 30px;">box</div>
-            <div class="word-target word-box" style="top: 250px; left: 330px;">box</div>
-            <div class="word-target word-box" style="top: 480px; left: 40px;">box</div>
+            <div class="word-target word-yak" style="top: 60px; left: 40px;">yak</div>
+            <div class="word-target word-yak" style="top: 240px; left: 320px;">yak</div>
+            <div class="word-target word-yak" style="top: 490px; left: 50px;">yak</div>
             
-            <div class="word-target word-fox" style="top: 80px; left: 330px;">fox</div>
-            <div class="word-target word-fox" style="top: 300px; left: 20px;">fox</div>
-            <div class="word-target word-fox" style="top: 520px; left: 330px;">fox</div>
+            <div class="word-target word-yam" style="top: 90px; left: 320px;">yam</div>
+            <div class="word-target word-yam" style="top: 310px; left: 30px;">yam</div>
+            <div class="word-target word-yam" style="top: 510px; left: 320px;">yam</div>
 
             <svg class="body-svg" viewBox="0 0 100 200">
                 <g fill="white" opacity="0.9">
@@ -182,11 +182,11 @@
                     <rect x="56" y="120" width="4" height="65" />
                 </g>
 
-                <text x="46" y="28" class="target-x" id="x1">X</text>
-                <text x="55" y="65" class="target-x" id="x2">X</text>
-                <text x="44" y="112" class="target-x" id="x3">X</text>
-                <text x="36" y="150" class="target-x" id="x4">X</text>
-                <text x="52" y="175" class="target-x" id="x5">X</text>
+                <text x="46" y="28" class="target-y" id="y1">Y</text>
+                <text x="55" y="65" class="target-y" id="y2">Y</text>
+                <text x="44" y="112" class="target-y" id="y3">Y</text>
+                <text x="36" y="150" class="target-y" id="y4">Y</text>
+                <text x="52" y="175" class="target-y" id="y5">Y</text>
             </svg>
         </div>
     </div>
@@ -199,10 +199,10 @@
         const uiTotal = document.getElementById('total-count');
         const uiMission = document.getElementById('mission-text');
         
-        let phase = 'x'; 
-        let foundX = 0, foundBox = 0, foundFox = 0;
+        let phase = 'y'; 
+        let foundY = 0, foundYak = 0, foundYam = 0;
 
-        // --- AUDIO SYNTHESIS (No external files needed) ---
+        // --- AUDIO SYNTHESIS ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playCorrectChime() {
@@ -210,7 +210,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch A5
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
             osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
             gain.gain.setValueAtTime(0, audioCtx.currentTime);
             gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
@@ -224,7 +224,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime); // Low rough pitch
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
             osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
             gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
@@ -235,7 +235,7 @@
         function triggerError() {
             playWrongBuzzer();
             view.classList.remove('shake');
-            void view.offsetWidth; // Force CSS reflow to restart animation
+            void view.offsetWidth; 
             view.classList.add('shake');
         }
 
@@ -268,24 +268,24 @@
             triggerError();
         });
 
-        // 2. Click Logic for X's
-        document.querySelectorAll('.target-x').forEach(target => {
+        // 2. Click Logic for Y's
+        document.querySelectorAll('.target-y').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                if (phase !== 'x' || target.classList.contains('found')) return; // Ignore if wrong phase
+                if (phase !== 'y' || target.classList.contains('found')) return; 
                 
-                e.stopPropagation(); // Prevent background click (Error) from firing
+                e.stopPropagation(); 
                 playCorrectChime();
                 target.classList.add('found');
                 target.textContent = '✔';
-                foundX++;
-                uiScore.textContent = foundX;
+                foundY++;
+                uiScore.textContent = foundY;
 
-                if (foundX === 5) {
-                    phase = 'box';
-                    uiMission.textContent = "MISSION: Scan for the words 'box'";
+                if (foundY === 5) {
+                    phase = 'yak';
+                    uiMission.textContent = "MISSION: Scan for the words 'yak'";
                     uiMission.style.color = "#f1c40f";
                     uiScore.textContent = 0; uiTotal.textContent = 3;
-                    setTimeout(() => speak("Find all the box"), 500);
+                    setTimeout(() => speak("Find all the yak"), 500);
                 }
             });
         });
@@ -293,51 +293,50 @@
         // 3. Click Logic for Words
         document.querySelectorAll('.word-target').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                const isBox = target.classList.contains('word-box');
-                const isFox = target.classList.contains('word-fox');
+                const isYak = target.classList.contains('word-yak');
+                const isYam = target.classList.contains('word-yam');
 
-                // Correct Box Found
-                if (phase === 'box' && isBox && !target.classList.contains('found')) {
+                // Correct Yak Found
+                if (phase === 'yak' && isYak && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundBox++;
-                    uiScore.textContent = foundBox;
+                    foundYak++;
+                    uiScore.textContent = foundYak;
 
-                    if (foundBox === 3) {
-                        phase = 'fox';
-                        uiMission.textContent = "MISSION: Scan for the words 'fox'";
+                    if (foundYak === 3) {
+                        phase = 'yam';
+                        uiMission.textContent = "MISSION: Scan for the words 'yam'";
                         uiMission.style.color = "#e67e22";
                         uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the fox"), 500);
+                        setTimeout(() => speak("Find all the yam"), 500);
                     }
                 }
-                // Correct Fox Found
-                else if (phase === 'fox' && isFox && !target.classList.contains('found')) {
+                // Correct Yam Found
+                else if (phase === 'yam' && isYam && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundFox++;
-                    uiScore.textContent = foundFox;
+                    foundYam++;
+                    uiScore.textContent = foundYam;
 
-                    if (foundFox === 3) {
+                    if (foundYam === 3) {
                         phase = 'done';
                         uiMission.textContent = "MISSION COMPLETE!";
                         uiMission.style.color = "#2ecc71";
                         setTimeout(() => speak("Good job"), 500);
                     }
                 }
-                // If they click a word during the wrong phase, the event bubbles up to boneLayer and causes an error!
             });
         });
 
         function resetGame() {
-            phase = 'x'; foundX = 0; foundBox = 0; foundFox = 0;
+            phase = 'y'; foundY = 0; foundYak = 0; foundYam = 0;
             uiScore.textContent = 0; uiTotal.textContent = 5;
-            uiMission.textContent = "MISSION: Find 5 hidden fractures (X)";
+            uiMission.textContent = "MISSION: Find 5 hidden anomalies (Y)";
             uiMission.style.color = "#ff4757";
 
-            document.querySelectorAll('.target-x').forEach(t => { t.classList.remove('found'); t.textContent = 'X'; });
+            document.querySelectorAll('.target-y').forEach(t => { t.classList.remove('found'); t.textContent = 'Y'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
         }
