@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision X-Ray & Word Mission (Letter Y)</title>
+    <title>Precision X-Ray & Word Mission (Letter Q)</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,7 @@
             width: 400px;
             height: 600px;
             background: #222;
-            border: 4px solid #9b59b6; /* Changed to purple for a fresh look */
+            border: 4px solid #9b59b6;
             border-radius: 10px;
             overflow: hidden;
             cursor: crosshair;
@@ -79,7 +79,7 @@
             pointer-events: none;
         }
 
-        .target-y {
+        .target-q {
             fill: #ff4757;
             font-size: 18px;
             font-weight: bold;
@@ -88,7 +88,7 @@
             user-select: none;
         }
 
-        .target-y.found { fill: #2ecc71; }
+        .target-q.found { fill: #2ecc71; }
 
         .word-target {
             position: absolute;
@@ -141,7 +141,7 @@
 
     <div id="ui">
         <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
-        <div id="mission-text">MISSION: Find 5 hidden anomalies (Y)</div>
+        <div id="mission-text">MISSION: Find 5 hidden anomalies (Q)</div>
         <button id="reset-btn" onclick="resetGame()">Start Again</button>
     </div>
 
@@ -162,13 +162,17 @@
         </div>
 
         <div id="bone-layer" class="layer-wrapper">
-            <div class="word-target word-yak" style="top: 60px; left: 40px;">yak</div>
-            <div class="word-target word-yak" style="top: 240px; left: 320px;">yak</div>
-            <div class="word-target word-yak" style="top: 490px; left: 50px;">yak</div>
+            <div class="word-target word-queen" style="top: 60px; left: 40px;">queen</div>
+            <div class="word-target word-queen" style="top: 240px; left: 300px;">queen</div>
+            <div class="word-target word-queen" style="top: 490px; left: 50px;">queen</div>
             
-            <div class="word-target word-yam" style="top: 90px; left: 320px;">yam</div>
-            <div class="word-target word-yam" style="top: 310px; left: 30px;">yam</div>
-            <div class="word-target word-yam" style="top: 510px; left: 320px;">yam</div>
+            <div class="word-target word-quail" style="top: 90px; left: 300px;">quail</div>
+            <div class="word-target word-quail" style="top: 310px; left: 30px;">quail</div>
+            <div class="word-target word-quail" style="top: 510px; left: 300px;">quail</div>
+
+            <div class="word-target word-quack" style="top: 150px; left: 160px;">quack</div>
+            <div class="word-target word-quack" style="top: 380px; left: 140px;">quack</div>
+            <div class="word-target word-quack" style="top: 560px; left: 180px;">quack</div>
 
             <svg class="body-svg" viewBox="0 0 100 200">
                 <g fill="white" opacity="0.9">
@@ -182,11 +186,11 @@
                     <rect x="56" y="120" width="4" height="65" />
                 </g>
 
-                <text x="46" y="28" class="target-y" id="y1">Y</text>
-                <text x="55" y="65" class="target-y" id="y2">Y</text>
-                <text x="44" y="112" class="target-y" id="y3">Y</text>
-                <text x="36" y="150" class="target-y" id="y4">Y</text>
-                <text x="52" y="175" class="target-y" id="y5">Y</text>
+                <text x="46" y="28" class="target-q" id="q1">Q</text>
+                <text x="55" y="65" class="target-q" id="q2">Q</text>
+                <text x="44" y="112" class="target-q" id="q3">Q</text>
+                <text x="36" y="150" class="target-q" id="q4">Q</text>
+                <text x="52" y="175" class="target-q" id="q5">Q</text>
             </svg>
         </div>
     </div>
@@ -199,8 +203,8 @@
         const uiTotal = document.getElementById('total-count');
         const uiMission = document.getElementById('mission-text');
         
-        let phase = 'y'; 
-        let foundY = 0, foundYak = 0, foundYam = 0;
+        let phase = 'q'; 
+        let foundQ = 0, foundQueen = 0, foundQuail = 0, foundQuack = 0;
 
         // --- AUDIO SYNTHESIS ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -268,24 +272,24 @@
             triggerError();
         });
 
-        // 2. Click Logic for Y's
-        document.querySelectorAll('.target-y').forEach(target => {
+        // 2. Click Logic for Q's
+        document.querySelectorAll('.target-q').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                if (phase !== 'y' || target.classList.contains('found')) return; 
+                if (phase !== 'q' || target.classList.contains('found')) return; 
                 
                 e.stopPropagation(); 
                 playCorrectChime();
                 target.classList.add('found');
                 target.textContent = '✔';
-                foundY++;
-                uiScore.textContent = foundY;
+                foundQ++;
+                uiScore.textContent = foundQ;
 
-                if (foundY === 5) {
-                    phase = 'yak';
-                    uiMission.textContent = "MISSION: Scan for the words 'yak'";
+                if (foundQ === 5) {
+                    phase = 'queen';
+                    uiMission.textContent = "MISSION: Scan for the words 'queen'";
                     uiMission.style.color = "#f1c40f";
                     uiScore.textContent = 0; uiTotal.textContent = 3;
-                    setTimeout(() => speak("Find all the yak"), 500);
+                    setTimeout(() => speak("Find all the queen"), 500);
                 }
             });
         });
@@ -293,34 +297,51 @@
         // 3. Click Logic for Words
         document.querySelectorAll('.word-target').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                const isYak = target.classList.contains('word-yak');
-                const isYam = target.classList.contains('word-yam');
+                const isQueen = target.classList.contains('word-queen');
+                const isQuail = target.classList.contains('word-quail');
+                const isQuack = target.classList.contains('word-quack');
 
-                // Correct Yak Found
-                if (phase === 'yak' && isYak && !target.classList.contains('found')) {
+                // Correct Queen Found
+                if (phase === 'queen' && isQueen && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundYak++;
-                    uiScore.textContent = foundYak;
+                    foundQueen++;
+                    uiScore.textContent = foundQueen;
 
-                    if (foundYak === 3) {
-                        phase = 'yam';
-                        uiMission.textContent = "MISSION: Scan for the words 'yam'";
+                    if (foundQueen === 3) {
+                        phase = 'quail';
+                        uiMission.textContent = "MISSION: Scan for the words 'quail'";
                         uiMission.style.color = "#e67e22";
                         uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the yam"), 500);
+                        setTimeout(() => speak("Find all the quail"), 500);
                     }
                 }
-                // Correct Yam Found
-                else if (phase === 'yam' && isYam && !target.classList.contains('found')) {
+                // Correct Quail Found
+                else if (phase === 'quail' && isQuail && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundYam++;
-                    uiScore.textContent = foundYam;
+                    foundQuail++;
+                    uiScore.textContent = foundQuail;
 
-                    if (foundYam === 3) {
+                    if (foundQuail === 3) {
+                        phase = 'quack';
+                        uiMission.textContent = "MISSION: Scan for the words 'quack'";
+                        uiMission.style.color = "#3498db"; /* New distinct color for Quack phase */
+                        uiScore.textContent = 0; uiTotal.textContent = 3;
+                        setTimeout(() => speak("Find all the quack"), 500);
+                    }
+                }
+                // Correct Quack Found
+                else if (phase === 'quack' && isQuack && !target.classList.contains('found')) {
+                    e.stopPropagation();
+                    playCorrectChime();
+                    target.classList.add('found');
+                    foundQuack++;
+                    uiScore.textContent = foundQuack;
+
+                    if (foundQuack === 3) {
                         phase = 'done';
                         uiMission.textContent = "MISSION COMPLETE!";
                         uiMission.style.color = "#2ecc71";
@@ -331,12 +352,12 @@
         });
 
         function resetGame() {
-            phase = 'y'; foundY = 0; foundYak = 0; foundYam = 0;
+            phase = 'q'; foundQ = 0; foundQueen = 0; foundQuail = 0; foundQuack = 0;
             uiScore.textContent = 0; uiTotal.textContent = 5;
-            uiMission.textContent = "MISSION: Find 5 hidden anomalies (Y)";
+            uiMission.textContent = "MISSION: Find 5 hidden anomalies (Q)";
             uiMission.style.color = "#ff4757";
 
-            document.querySelectorAll('.target-y').forEach(t => { t.classList.remove('found'); t.textContent = 'Y'; });
+            document.querySelectorAll('.target-q').forEach(t => { t.classList.remove('found'); t.textContent = 'Q'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
         }
