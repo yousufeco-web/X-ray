@@ -162,17 +162,17 @@
         </div>
 
         <div id="bone-layer" class="layer-wrapper">
-            <div class="word-target word-queen" style="top: 60px; left: 40px;">queen</div>
-            <div class="word-target word-queen" style="top: 240px; left: 300px;">queen</div>
-            <div class="word-target word-queen" style="top: 490px; left: 50px;">queen</div>
+            <div class="word-target word-queen">queen</div>
+            <div class="word-target word-queen">queen</div>
+            <div class="word-target word-queen">queen</div>
             
-            <div class="word-target word-quail" style="top: 90px; left: 300px;">quail</div>
-            <div class="word-target word-quail" style="top: 310px; left: 30px;">quail</div>
-            <div class="word-target word-quail" style="top: 510px; left: 300px;">quail</div>
+            <div class="word-target word-quail">quail</div>
+            <div class="word-target word-quail">quail</div>
+            <div class="word-target word-quail">quail</div>
 
-            <div class="word-target word-quack" style="top: 150px; left: 160px;">quack</div>
-            <div class="word-target word-quack" style="top: 380px; left: 140px;">quack</div>
-            <div class="word-target word-quack" style="top: 560px; left: 180px;">quack</div>
+            <div class="word-target word-quack">quack</div>
+            <div class="word-target word-quack">quack</div>
+            <div class="word-target word-quack">quack</div>
 
             <svg class="body-svg" viewBox="0 0 100 200">
                 <g fill="white" opacity="0.9">
@@ -248,6 +248,33 @@
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1.0; 
             window.speechSynthesis.speak(utterance);
+        }
+
+        // --- RANDOM WORD POSITIONING ---
+        function randomizeWordPositions() {
+            const words = document.querySelectorAll('.word-target');
+            words.forEach(word => {
+                let validPosition = false;
+                let randomX, randomY;
+
+                while (!validPosition) {
+                    // Game boundaries (Word width ~70px, Height ~25px)
+                    randomX = Math.floor(Math.random() * 300) + 10; 
+                    randomY = Math.floor(Math.random() * 550) + 20; 
+
+                    // Body area (approximate rectangle holding the body so words spawn *around* it)
+                    // The body occupies roughly X: 80 to 280, Y: 60 to 540
+                    const inBodyBounds = (randomX > 70 && randomX < 270) && (randomY > 50 && randomY < 530);
+
+                    // Only accept the coordinate if it is strictly outside the body bounds
+                    if (!inBodyBounds) {
+                        validPosition = true;
+                    }
+                }
+
+                word.style.left = randomX + 'px';
+                word.style.top = randomY + 'px';
+            });
         }
 
         // --- X-RAY TRACKING ---
@@ -328,7 +355,7 @@
                     if (foundQuail === 3) {
                         phase = 'quack';
                         uiMission.textContent = "MISSION: Scan for the words 'quack'";
-                        uiMission.style.color = "#3498db"; /* New distinct color for Quack phase */
+                        uiMission.style.color = "#3498db"; 
                         uiScore.textContent = 0; uiTotal.textContent = 3;
                         setTimeout(() => speak("Find all the quack"), 500);
                     }
@@ -360,7 +387,13 @@
             document.querySelectorAll('.target-q').forEach(t => { t.classList.remove('found'); t.textContent = 'Q'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
+            
+            // Randomize words every time the game restarts
+            randomizeWordPositions();
         }
+
+        // Initialize positions on first load
+        randomizeWordPositions();
     </script>
 </body>
 </html>
