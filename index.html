@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision X-Ray & Word Mission (Letter Q)</title>
+    <title>Precision X-Ray & Word Mission (Letter q)</title>
     <style>
         body {
             margin: 0;
@@ -141,7 +141,7 @@
 
     <div id="ui">
         <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
-        <div id="mission-text">MISSION: Find 5 hidden anomalies (Q)</div>
+        <div id="mission-text">MISSION: Find 5 hidden anomalies (q)</div>
         <button id="reset-btn" onclick="resetGame()">Start Again</button>
     </div>
 
@@ -162,17 +162,13 @@
         </div>
 
         <div id="bone-layer" class="layer-wrapper">
-            <div class="word-target word-queen">queen</div>
-            <div class="word-target word-queen">queen</div>
-            <div class="word-target word-queen">queen</div>
+            <div class="word-target word-quiet">quiet</div>
+            <div class="word-target word-quiet">quiet</div>
+            <div class="word-target word-quiet">quiet</div>
             
-            <div class="word-target word-quail">quail</div>
-            <div class="word-target word-quail">quail</div>
-            <div class="word-target word-quail">quail</div>
-
-            <div class="word-target word-quack">quack</div>
-            <div class="word-target word-quack">quack</div>
-            <div class="word-target word-quack">quack</div>
+            <div class="word-target word-volcano">volcano</div>
+            <div class="word-target word-volcano">volcano</div>
+            <div class="word-target word-volcano">volcano</div>
 
             <svg class="body-svg" viewBox="0 0 100 200">
                 <g fill="white" opacity="0.9">
@@ -186,11 +182,11 @@
                     <rect x="56" y="120" width="4" height="65" />
                 </g>
 
-                <text x="46" y="28" class="target-q" id="q1">Q</text>
-                <text x="55" y="65" class="target-q" id="q2">Q</text>
-                <text x="44" y="112" class="target-q" id="q3">Q</text>
-                <text x="36" y="150" class="target-q" id="q4">Q</text>
-                <text x="52" y="175" class="target-q" id="q5">Q</text>
+                <text x="46" y="28" class="target-q" id="q1">q</text>
+                <text x="55" y="65" class="target-q" id="q2">q</text>
+                <text x="44" y="112" class="target-q" id="q3">q</text>
+                <text x="36" y="150" class="target-q" id="q4">q</text>
+                <text x="52" y="175" class="target-q" id="q5">q</text>
             </svg>
         </div>
     </div>
@@ -204,7 +200,7 @@
         const uiMission = document.getElementById('mission-text');
         
         let phase = 'q'; 
-        let foundQ = 0, foundQueen = 0, foundQuail = 0, foundQuack = 0;
+        let foundQ = 0, foundQuiet = 0, foundVolcano = 0;
 
         // --- AUDIO SYNTHESIS ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -299,7 +295,7 @@
             triggerError();
         });
 
-        // 2. Click Logic for Q's
+        // 2. Click Logic for q's
         document.querySelectorAll('.target-q').forEach(target => {
             target.addEventListener('mousedown', (e) => {
                 if (phase !== 'q' || target.classList.contains('found')) return; 
@@ -312,11 +308,11 @@
                 uiScore.textContent = foundQ;
 
                 if (foundQ === 5) {
-                    phase = 'queen';
-                    uiMission.textContent = "MISSION: Scan for the words 'queen'";
+                    phase = 'quiet';
+                    uiMission.textContent = "MISSION: Scan for the words 'quiet'";
                     uiMission.style.color = "#f1c40f";
                     uiScore.textContent = 0; uiTotal.textContent = 3;
-                    setTimeout(() => speak("Find all the queen"), 500);
+                    setTimeout(() => speak("Find all the quiet"), 500);
                 }
             });
         });
@@ -324,51 +320,34 @@
         // 3. Click Logic for Words
         document.querySelectorAll('.word-target').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                const isQueen = target.classList.contains('word-queen');
-                const isQuail = target.classList.contains('word-quail');
-                const isQuack = target.classList.contains('word-quack');
+                const isQuiet = target.classList.contains('word-quiet');
+                const isVolcano = target.classList.contains('word-volcano');
 
-                // Correct Queen Found
-                if (phase === 'queen' && isQueen && !target.classList.contains('found')) {
+                // Correct Quiet Found
+                if (phase === 'quiet' && isQuiet && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundQueen++;
-                    uiScore.textContent = foundQueen;
+                    foundQuiet++;
+                    uiScore.textContent = foundQuiet;
 
-                    if (foundQueen === 3) {
-                        phase = 'quail';
-                        uiMission.textContent = "MISSION: Scan for the words 'quail'";
+                    if (foundQuiet === 3) {
+                        phase = 'volcano';
+                        uiMission.textContent = "MISSION: Scan for the words 'volcano'";
                         uiMission.style.color = "#e67e22";
                         uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the quail"), 500);
+                        setTimeout(() => speak("Find all the volcano"), 500);
                     }
                 }
-                // Correct Quail Found
-                else if (phase === 'quail' && isQuail && !target.classList.contains('found')) {
+                // Correct Volcano Found
+                else if (phase === 'volcano' && isVolcano && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundQuail++;
-                    uiScore.textContent = foundQuail;
+                    foundVolcano++;
+                    uiScore.textContent = foundVolcano;
 
-                    if (foundQuail === 3) {
-                        phase = 'quack';
-                        uiMission.textContent = "MISSION: Scan for the words 'quack'";
-                        uiMission.style.color = "#3498db"; 
-                        uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the quack"), 500);
-                    }
-                }
-                // Correct Quack Found
-                else if (phase === 'quack' && isQuack && !target.classList.contains('found')) {
-                    e.stopPropagation();
-                    playCorrectChime();
-                    target.classList.add('found');
-                    foundQuack++;
-                    uiScore.textContent = foundQuack;
-
-                    if (foundQuack === 3) {
+                    if (foundVolcano === 3) {
                         phase = 'done';
                         uiMission.textContent = "MISSION COMPLETE!";
                         uiMission.style.color = "#2ecc71";
@@ -379,12 +358,12 @@
         });
 
         function resetGame() {
-            phase = 'q'; foundQ = 0; foundQueen = 0; foundQuail = 0; foundQuack = 0;
+            phase = 'q'; foundQ = 0; foundQuiet = 0; foundVolcano = 0;
             uiScore.textContent = 0; uiTotal.textContent = 5;
-            uiMission.textContent = "MISSION: Find 5 hidden anomalies (Q)";
+            uiMission.textContent = "MISSION: Find 5 hidden anomalies (q)";
             uiMission.style.color = "#ff4757";
 
-            document.querySelectorAll('.target-q').forEach(t => { t.classList.remove('found'); t.textContent = 'Q'; });
+            document.querySelectorAll('.target-q').forEach(t => { t.classList.remove('found'); t.textContent = 'q'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
             
