@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision X-Ray & Word Mission (Letter q)</title>
+    <title>Precision X-Ray & Word Mission (Letter Z)</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,7 @@
             width: 400px;
             height: 600px;
             background: #222;
-            border: 4px solid #9b59b6;
+            border: 4px solid #16a085; /* Teal theme for Z */
             border-radius: 10px;
             overflow: hidden;
             cursor: crosshair;
@@ -46,7 +46,7 @@
 
         .shake {
             animation: shake 0.4s;
-            border-color: #e74c3c !important; /* Flash red border on error */
+            border-color: #e74c3c !important; 
         }
 
         .layer-wrapper {
@@ -79,7 +79,7 @@
             pointer-events: none;
         }
 
-        .target-q {
+        .target-z {
             fill: #ff4757;
             font-size: 18px;
             font-weight: bold;
@@ -88,7 +88,7 @@
             user-select: none;
         }
 
-        .target-q.found { fill: #2ecc71; }
+        .target-z.found { fill: #2ecc71; }
 
         .word-target {
             position: absolute;
@@ -117,8 +117,8 @@
             position: absolute;
             width: 120px;
             height: 120px;
-            border: 2px solid #9b59b6;
-            box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
+            border: 2px solid #16a085;
+            box-shadow: 0 0 15px rgba(22, 160, 133, 0.5);
             pointer-events: none;
             z-index: 10;
             transform: translate(-50%, -50%);
@@ -127,21 +127,21 @@
 
         #ui { margin-bottom: 15px; text-align: center; width: 400px; }
         #mission-text { font-size: 18px; color: #ff4757; font-weight: bold; margin: 10px 0; min-height: 20px; }
-        .counter { font-size: 22px; color: #9b59b6; font-weight: bold; }
+        .counter { font-size: 22px; color: #16a085; font-weight: bold; }
         
         button {
             margin-top: 10px; padding: 10px 20px; font-size: 16px; font-weight: bold;
-            color: white; background-color: #8e44ad; border: none; border-radius: 5px;
+            color: white; background-color: #1abc9c; border: none; border-radius: 5px;
             cursor: pointer; font-family: inherit; transition: 0.2s;
         }
-        button:hover { background-color: #732d91; }
+        button:hover { background-color: #16a085; }
     </style>
 </head>
 <body>
 
     <div id="ui">
         <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
-        <div id="mission-text">MISSION: Find 5 hidden anomalies (q)</div>
+        <div id="mission-text">MISSION: Find 5 hidden anomalies (Z)</div>
         <button id="reset-btn" onclick="resetGame()">Start Again</button>
     </div>
 
@@ -162,13 +162,13 @@
         </div>
 
         <div id="bone-layer" class="layer-wrapper">
-            <div class="word-target word-quiet">quiet</div>
-            <div class="word-target word-quiet">quiet</div>
-            <div class="word-target word-quiet">quiet</div>
+            <div class="word-target word-zoo" style="top: 60px; left: 40px;">zoo</div>
+            <div class="word-target word-zoo" style="top: 240px; left: 320px;">zoo</div>
+            <div class="word-target word-zoo" style="top: 490px; left: 50px;">zoo</div>
             
-            <div class="word-target word-volcano">volcano</div>
-            <div class="word-target word-volcano">volcano</div>
-            <div class="word-target word-volcano">volcano</div>
+            <div class="word-target word-zebra" style="top: 90px; left: 310px;">zebra</div>
+            <div class="word-target word-zebra" style="top: 310px; left: 20px;">zebra</div>
+            <div class="word-target word-zebra" style="top: 510px; left: 310px;">zebra</div>
 
             <svg class="body-svg" viewBox="0 0 100 200">
                 <g fill="white" opacity="0.9">
@@ -182,11 +182,11 @@
                     <rect x="56" y="120" width="4" height="65" />
                 </g>
 
-                <text x="46" y="28" class="target-q" id="q1">q</text>
-                <text x="55" y="65" class="target-q" id="q2">q</text>
-                <text x="44" y="112" class="target-q" id="q3">q</text>
-                <text x="36" y="150" class="target-q" id="q4">q</text>
-                <text x="52" y="175" class="target-q" id="q5">q</text>
+                <text x="46" y="28" class="target-z" id="z1">Z</text>
+                <text x="55" y="65" class="target-z" id="z2">Z</text>
+                <text x="44" y="112" class="target-z" id="z3">Z</text>
+                <text x="36" y="150" class="target-z" id="z4">Z</text>
+                <text x="52" y="175" class="target-z" id="z5">Z</text>
             </svg>
         </div>
     </div>
@@ -199,8 +199,8 @@
         const uiTotal = document.getElementById('total-count');
         const uiMission = document.getElementById('mission-text');
         
-        let phase = 'q'; 
-        let foundQ = 0, foundQuiet = 0, foundVolcano = 0;
+        let phase = 'z'; 
+        let foundZ = 0, foundZoo = 0, foundZebra = 0;
 
         // --- AUDIO SYNTHESIS ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -246,33 +246,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- RANDOM WORD POSITIONING ---
-        function randomizeWordPositions() {
-            const words = document.querySelectorAll('.word-target');
-            words.forEach(word => {
-                let validPosition = false;
-                let randomX, randomY;
-
-                while (!validPosition) {
-                    // Game boundaries (Word width ~70px, Height ~25px)
-                    randomX = Math.floor(Math.random() * 300) + 10; 
-                    randomY = Math.floor(Math.random() * 550) + 20; 
-
-                    // Body area (approximate rectangle holding the body so words spawn *around* it)
-                    // The body occupies roughly X: 80 to 280, Y: 60 to 540
-                    const inBodyBounds = (randomX > 70 && randomX < 270) && (randomY > 50 && randomY < 530);
-
-                    // Only accept the coordinate if it is strictly outside the body bounds
-                    if (!inBodyBounds) {
-                        validPosition = true;
-                    }
-                }
-
-                word.style.left = randomX + 'px';
-                word.style.top = randomY + 'px';
-            });
-        }
-
         // --- X-RAY TRACKING ---
         view.addEventListener('mousemove', (e) => {
             const rect = view.getBoundingClientRect();
@@ -295,24 +268,24 @@
             triggerError();
         });
 
-        // 2. Click Logic for q's
-        document.querySelectorAll('.target-q').forEach(target => {
+        // 2. Click Logic for Z's
+        document.querySelectorAll('.target-z').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                if (phase !== 'q' || target.classList.contains('found')) return; 
+                if (phase !== 'z' || target.classList.contains('found')) return; 
                 
                 e.stopPropagation(); 
                 playCorrectChime();
                 target.classList.add('found');
                 target.textContent = '✔';
-                foundQ++;
-                uiScore.textContent = foundQ;
+                foundZ++;
+                uiScore.textContent = foundZ;
 
-                if (foundQ === 5) {
-                    phase = 'quiet';
-                    uiMission.textContent = "MISSION: Scan for the words 'quiet'";
+                if (foundZ === 5) {
+                    phase = 'zoo';
+                    uiMission.textContent = "MISSION: Scan for the words 'zoo'";
                     uiMission.style.color = "#f1c40f";
                     uiScore.textContent = 0; uiTotal.textContent = 3;
-                    setTimeout(() => speak("Find all the quiet"), 500);
+                    setTimeout(() => speak("Find all the zoo"), 500);
                 }
             });
         });
@@ -320,34 +293,34 @@
         // 3. Click Logic for Words
         document.querySelectorAll('.word-target').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                const isQuiet = target.classList.contains('word-quiet');
-                const isVolcano = target.classList.contains('word-volcano');
+                const isZoo = target.classList.contains('word-zoo');
+                const isZebra = target.classList.contains('word-zebra');
 
-                // Correct Quiet Found
-                if (phase === 'quiet' && isQuiet && !target.classList.contains('found')) {
+                // Correct Zoo Found
+                if (phase === 'zoo' && isZoo && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundQuiet++;
-                    uiScore.textContent = foundQuiet;
+                    foundZoo++;
+                    uiScore.textContent = foundZoo;
 
-                    if (foundQuiet === 3) {
-                        phase = 'volcano';
-                        uiMission.textContent = "MISSION: Scan for the words 'volcano'";
+                    if (foundZoo === 3) {
+                        phase = 'zebra';
+                        uiMission.textContent = "MISSION: Scan for the words 'zebra'";
                         uiMission.style.color = "#e67e22";
                         uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the volcano"), 500);
+                        setTimeout(() => speak("Find all the zebra"), 500);
                     }
                 }
-                // Correct Volcano Found
-                else if (phase === 'volcano' && isVolcano && !target.classList.contains('found')) {
+                // Correct Zebra Found
+                else if (phase === 'zebra' && isZebra && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundVolcano++;
-                    uiScore.textContent = foundVolcano;
+                    foundZebra++;
+                    uiScore.textContent = foundZebra;
 
-                    if (foundVolcano === 3) {
+                    if (foundZebra === 3) {
                         phase = 'done';
                         uiMission.textContent = "MISSION COMPLETE!";
                         uiMission.style.color = "#2ecc71";
@@ -358,21 +331,15 @@
         });
 
         function resetGame() {
-            phase = 'q'; foundQ = 0; foundQuiet = 0; foundVolcano = 0;
+            phase = 'z'; foundZ = 0; foundZoo = 0; foundZebra = 0;
             uiScore.textContent = 0; uiTotal.textContent = 5;
-            uiMission.textContent = "MISSION: Find 5 hidden anomalies (q)";
+            uiMission.textContent = "MISSION: Find 5 hidden anomalies (Z)";
             uiMission.style.color = "#ff4757";
 
-            document.querySelectorAll('.target-q').forEach(t => { t.classList.remove('found'); t.textContent = 'q'; });
+            document.querySelectorAll('.target-z').forEach(t => { t.classList.remove('found'); t.textContent = 'Z'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
-            
-            // Randomize words every time the game restarts
-            randomizeWordPositions();
         }
-
-        // Initialize positions on first load
-        randomizeWordPositions();
     </script>
 </body>
 </html>
