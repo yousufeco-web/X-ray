@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precision X-Ray & Word Mission (Letter e)</title>
+    <title>Precision X-Ray & Word Mission (Letter I)</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,7 @@
             width: 400px;
             height: 600px;
             background: #222;
-            border: 4px solid #e84393; /* Magenta theme for 'e' */
+            border: 4px solid #00cec9; /* Cyan theme for 'I' */
             border-radius: 10px;
             overflow: hidden;
             cursor: crosshair;
@@ -79,7 +79,7 @@
             pointer-events: none;
         }
 
-        .target-e {
+        .target-i {
             fill: #ff4757;
             font-size: 20px;
             font-weight: bold;
@@ -88,7 +88,7 @@
             user-select: none;
         }
 
-        .target-e.found { fill: #2ecc71; }
+        .target-i.found { fill: #2ecc71; }
 
         .word-target {
             position: absolute;
@@ -117,8 +117,8 @@
             position: absolute;
             width: 120px;
             height: 120px;
-            border: 2px solid #e84393;
-            box-shadow: 0 0 15px rgba(232, 67, 147, 0.5);
+            border: 2px solid #00cec9;
+            box-shadow: 0 0 15px rgba(0, 206, 201, 0.5);
             pointer-events: none;
             z-index: 10;
             transform: translate(-50%, -50%);
@@ -127,21 +127,21 @@
 
         #ui { margin-bottom: 15px; text-align: center; width: 400px; }
         #mission-text { font-size: 18px; color: #ff4757; font-weight: bold; margin: 10px 0; min-height: 20px; }
-        .counter { font-size: 22px; color: #e84393; font-weight: bold; }
+        .counter { font-size: 22px; color: #00cec9; font-weight: bold; }
         
         button {
             margin-top: 10px; padding: 10px 20px; font-size: 16px; font-weight: bold;
-            color: white; background-color: #fd79a8; border: none; border-radius: 5px;
+            color: white; background-color: #00b894; border: none; border-radius: 5px;
             cursor: pointer; font-family: inherit; transition: 0.2s;
         }
-        button:hover { background-color: #e84393; }
+        button:hover { background-color: #00cec9; }
     </style>
 </head>
 <body>
 
     <div id="ui">
         <div class="counter">SCORE: <span id="found-count">0</span> / <span id="total-count">5</span></div>
-        <div id="mission-text">MISSION: Find 5 hidden anomalies (e)</div>
+        <div id="mission-text">MISSION: Find 5 hidden anomalies (I)</div>
         <button id="reset-btn" onclick="resetGame()">Start Again</button>
     </div>
 
@@ -163,13 +163,13 @@
 
         <div id="bone-layer" class="layer-wrapper">
             <!-- Words -->
-            <div class="word-target word-seal" style="top: 50px; left: 40px;">seal</div>
-            <div class="word-target word-seal" style="top: 260px; left: 320px;">seal</div>
-            <div class="word-target word-seal" style="top: 480px; left: 40px;">seal</div>
+            <div class="word-target word-kit" style="top: 50px; left: 40px;">kit</div>
+            <div class="word-target word-kit" style="top: 260px; left: 330px;">kit</div>
+            <div class="word-target word-kit" style="top: 480px; left: 40px;">kit</div>
             
-            <div class="word-target word-bet" style="top: 100px; left: 320px;">bet</div>
-            <div class="word-target word-bet" style="top: 310px; left: 30px;">bet</div>
-            <div class="word-target word-bet" style="top: 520px; left: 320px;">bet</div>
+            <div class="word-target word-kite" style="top: 100px; left: 320px;">kite</div>
+            <div class="word-target word-kite" style="top: 310px; left: 30px;">kite</div>
+            <div class="word-target word-kite" style="top: 520px; left: 320px;">kite</div>
 
             <!-- Skeleton -->
             <svg class="body-svg" viewBox="0 0 100 200">
@@ -184,12 +184,12 @@
                     <rect x="56" y="120" width="4" height="65" />
                 </g>
 
-                <!-- Hidden 'e' Targets -->
-                <text x="46" y="28" class="target-e" id="e1">e</text>
-                <text x="55" y="65" class="target-e" id="e2">e</text>
-                <text x="44" y="112" class="target-e" id="e3">e</text>
-                <text x="36" y="150" class="target-e" id="e4">e</text>
-                <text x="52" y="175" class="target-e" id="e5">e</text>
+                <!-- Hidden 'I' Targets -->
+                <text x="46" y="28" class="target-i" id="i1">I</text>
+                <text x="55" y="65" class="target-i" id="i2">I</text>
+                <text x="44" y="112" class="target-i" id="i3">I</text>
+                <text x="36" y="150" class="target-i" id="i4">I</text>
+                <text x="52" y="175" class="target-i" id="i5">I</text>
             </svg>
         </div>
     </div>
@@ -202,8 +202,8 @@
         const uiTotal = document.getElementById('total-count');
         const uiMission = document.getElementById('mission-text');
         
-        let phase = 'e'; 
-        let foundE = 0, foundSeal = 0, foundBet = 0;
+        let phase = 'i'; 
+        let foundI = 0, foundKit = 0, foundKite = 0;
 
         // --- AUDIO SYNTHESIS ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -271,24 +271,24 @@
             triggerError();
         });
 
-        // 2. Click Logic for 'e's
-        document.querySelectorAll('.target-e').forEach(target => {
+        // 2. Click Logic for 'I's
+        document.querySelectorAll('.target-i').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                if (phase !== 'e' || target.classList.contains('found')) return; 
+                if (phase !== 'i' || target.classList.contains('found')) return; 
                 
                 e.stopPropagation(); 
                 playCorrectChime();
                 target.classList.add('found');
                 target.textContent = '✔';
-                foundE++;
-                uiScore.textContent = foundE;
+                foundI++;
+                uiScore.textContent = foundI;
 
-                if (foundE === 5) {
-                    phase = 'seal';
-                    uiMission.textContent = "MISSION: Scan for the words 'seal'";
+                if (foundI === 5) {
+                    phase = 'kit';
+                    uiMission.textContent = "MISSION: Scan for the words 'kit'";
                     uiMission.style.color = "#f1c40f";
                     uiScore.textContent = 0; uiTotal.textContent = 3;
-                    setTimeout(() => speak("Find all the seal"), 500);
+                    setTimeout(() => speak("Find all the kit"), 500);
                 }
             });
         });
@@ -296,34 +296,34 @@
         // 3. Click Logic for Words
         document.querySelectorAll('.word-target').forEach(target => {
             target.addEventListener('mousedown', (e) => {
-                const isSeal = target.classList.contains('word-seal');
-                const isBet = target.classList.contains('word-bet');
+                const isKit = target.classList.contains('word-kit');
+                const isKite = target.classList.contains('word-kite');
 
-                // Correct Seal Found
-                if (phase === 'seal' && isSeal && !target.classList.contains('found')) {
+                // Correct Kit Found
+                if (phase === 'kit' && isKit && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundSeal++;
-                    uiScore.textContent = foundSeal;
+                    foundKit++;
+                    uiScore.textContent = foundKit;
 
-                    if (foundSeal === 3) {
-                        phase = 'bet';
-                        uiMission.textContent = "MISSION: Scan for the words 'bet'";
+                    if (foundKit === 3) {
+                        phase = 'kite';
+                        uiMission.textContent = "MISSION: Scan for the words 'kite'";
                         uiMission.style.color = "#e67e22";
                         uiScore.textContent = 0; uiTotal.textContent = 3;
-                        setTimeout(() => speak("Find all the bet"), 500);
+                        setTimeout(() => speak("Find all the kite"), 500);
                     }
                 }
-                // Correct Bet Found
-                else if (phase === 'bet' && isBet && !target.classList.contains('found')) {
+                // Correct Kite Found
+                else if (phase === 'kite' && isKite && !target.classList.contains('found')) {
                     e.stopPropagation();
                     playCorrectChime();
                     target.classList.add('found');
-                    foundBet++;
-                    uiScore.textContent = foundBet;
+                    foundKite++;
+                    uiScore.textContent = foundKite;
 
-                    if (foundBet === 3) {
+                    if (foundKite === 3) {
                         phase = 'done';
                         uiMission.textContent = "MISSION COMPLETE!";
                         uiMission.style.color = "#2ecc71";
@@ -334,12 +334,12 @@
         });
 
         function resetGame() {
-            phase = 'e'; foundE = 0; foundSeal = 0; foundBet = 0;
+            phase = 'i'; foundI = 0; foundKit = 0; foundKite = 0;
             uiScore.textContent = 0; uiTotal.textContent = 5;
-            uiMission.textContent = "MISSION: Find 5 hidden anomalies (e)";
+            uiMission.textContent = "MISSION: Find 5 hidden anomalies (I)";
             uiMission.style.color = "#ff4757";
 
-            document.querySelectorAll('.target-e').forEach(t => { t.classList.remove('found'); t.textContent = 'e'; });
+            document.querySelectorAll('.target-i').forEach(t => { t.classList.remove('found'); t.textContent = 'I'; });
             document.querySelectorAll('.word-target').forEach(t => t.classList.remove('found'));
             view.classList.remove('shake');
         }
